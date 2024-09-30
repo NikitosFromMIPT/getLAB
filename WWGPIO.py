@@ -1,6 +1,7 @@
 import RPi.GPIO as gpio
 gpio.setmode(gpio.BCM)
 dac=[26, 19, 13, 6, 5, 11, 9, 10]
+led=[2, 3, 4, 17, 27, 22, 10, 9]
 gpio.setup(dac, gpio.OUT)
 
 
