@@ -10,21 +10,26 @@ def dec2bin(n):
 
 
 try:
-    while (True):
-        a=input('input 0-255')
-        if a=='q':
-            sys.exit()
-        elif  a.isdigit() and int(a)%1==0 and 0<=int(a)<=255:
-            gpio.output(dac, dec2bin(int(a), 8))
-            print("{:.4f}".format(int(a)/256*3.3))
-        elif not a.isdigit():
-            print('input number 0-255sdfgsfd')
-    
-        
-except ValueError:
-    print('input number 0-255')
+    while True:
+        n = input("Введите целое число от 0 до 255")
+        if n=="q":
+            sys.exit
+
+        elif n.isdigit() == False:
+            print("ВВЕДИТЕ ЧИСЛО, А НЕ ТЕКСТ")
+
+        elif 255 < int(n) < 0 or int(n)%1!=0:
+            print("ВВЕДИТЕ ЧИСЛО ПРАВИЛЬНО !!! ")
+
+        else:
+            print(int(n)*3.3/256, "В")
+            gpio.output(dac, dec2bin(n))
+
 except KeyboardInterrupt:
-    print('done')
+    print('Программа была остановленна с клавиатуры')
+except ValueError:
+    print("ВВЕДИТЕ ЧИСЛО ПРАВИЛЬНО !!! ")
+
 finally:
     gpio.output(dac, 0)
     gpio.cleanup()
