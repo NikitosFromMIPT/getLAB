@@ -1,7 +1,7 @@
 import RPi.GPIO as gpio
 import sys
 gpio.setmode(gpio.BCM)
-dac=[26, 19, 13, 6, 5, 11, 9, 10]
+dac=[8, 11, 7, 1, 0, 5, 12, 6]
 gpio.setup(dac, gpio.OUT)
 
 def dec2bin(n):
@@ -11,7 +11,7 @@ def dec2bin(n):
 
 try:
     while True:
-        n = input("Введите целое число от 0 до 255")
+        n = input("Введите целое число от 0 до 255 ")
         if n=="q":
             sys.exit
 
@@ -23,7 +23,8 @@ try:
 
         else:
             print(int(n)*3.3/256, "В")
-            gpio.output(dac, dec2bin(n))
+            print(dec2bin(int(n)))
+            gpio.output(dac, dec2bin(int(n)))
 
 except KeyboardInterrupt:
     print('Программа была остановленна с клавиатуры')

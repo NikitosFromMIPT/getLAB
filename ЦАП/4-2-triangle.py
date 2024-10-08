@@ -2,15 +2,16 @@ import RPi.GPIO as gpio
 import sys
 from time import sleep
 gpio.setmode(gpio.BCM)
-dac=[26, 19, 13, 6, 5, 11, 9, 10]
+dac=[8, 11, 7, 1, 0, 5, 12, 6]
 gpio.setup(dac, gpio.OUT)
 
 def dec2bin(n):
     return[int (element) for element in bin(n)[2:].zfill(8)]
 
 try:
+    T = input("Введите период треугольного сигнала (Положительное число)")
     while True:
-        T = input("Введите период треугольного сигнала (Положительное число)")
+        
         if T=="q":
             sys.exit
 
@@ -21,8 +22,9 @@ try:
             print("ВВЕДИТЕ ПОЛОЖИТЕЛЬНОЕ ЧИСЛО !!! ")
 
         else:
-            t = T/2/256
+            t = int(T)/2/256
             for i in range(256):
+                print(dec2bin(i))
                 gpio.output(dac, dec2bin(i))
                 print(int(i)*3.3/256, "В")
                 sleep(t)
