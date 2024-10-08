@@ -14,30 +14,16 @@ gpio.setup(comp, gpio.IN)
 
 def dec2bin(n):
     return[int (element) for element in bin(n)[2:].zfill(8)]
-def bin2dec(n):
-    num =0
-    s = 7
-    for i in range(8):
-        num+= n[i]*2**s
-        s-=1
-    return(num)
+
 
 def adc():
-    DACout= [1,0,0,0, 0,0,0,0]
-    gpio.output(dac, DACout)
-    for i in range(8):
-        time.sleep(0.005)  
-        if gpio.input(comp) ==1:
-            DACout[i] = 0 
-        if i!=7:
-            DACout[i+1] = 1  
-        gpio.output(dac, DACout) 
-        time.sleep(0.005)       
-    return(DACout)    
+    n = 0
+    while 
+    return(n)
 
 try:
     while True:
-        Vn = bin2dec(adc())
+        Vn =adc()
         if Vn!=0:
             print(Vn*3.6/256,"В")
            
