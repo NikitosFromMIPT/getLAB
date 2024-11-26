@@ -1,17 +1,19 @@
-import RPi.GPIO as gpio
+import RPi.GPIO as GPIO
 import sys
 from time import sleep
 import time
 from matplotlib import pyplot
-gpio.setmode(gpio.BCM)
-dac=[26, 19, 13, 6, 5, 11, 9, 10]
-comp=4
-knop_out=2
-knop_in=22
-gpio.setup(knop_out, gpio.OUT, initial=gpio.HIGH)
-gpio.setup(knop_in, gpio.IN)
-gpio.setup(dac, gpio.OUT)
-gpio.setup(comp, gpio.IN)
+
+GPIO.setwarnings(False)
+
+GPIO.setmode(GPIO.BCM)
+dac=[8, 11, 7, 1, 0, 5, 12, 6]
+comp = 14
+Gateway = 24
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(comp, GPIO.IN)
+GPIO.setup(Gateway, GPIO.IN)
+GPIO.setup(dac, GPIO.OUT)
 
 def perev(a):
     return [int (elem) for elem in bin(a)[2:].zfill(8)]
@@ -20,43 +22,49 @@ def adc():
     k=0
     for i in range(7, -1, -1):
         k+=2**i
-        gpio.output(dac, perev(k))
-        sleep(0.005)
-        if gpio.input(comp)==0:
+        GPIO.output(dac, perev(k))
+        sleep(0.001)
+        if GPIO.input(comp)==1:
             k-=2**i
     return k
 
-def waitForOpen():
 
-    print('GPIO initialized. Wait for door opening...')
+def waitForOpen():                          #функция для проверки состояния двери
 
-    while gpio.input(knop_in) >0:
-        pass
-
-    print('The door is open. GPIO has been cleaned up. Start sampling...')
+    if GPIO.input(Gateway) == 0:
+        print('The door is open')             #если через датчик идет напряжение,
+        return  True                       #то значение на Gateway
+    else:
+        print('The door is close')                                   #не равно 0 => дверь открыта
+        return False
 
 volt=[]
 time_start=0
 time_len=0
 
 try:
-    waitForOpen()
-    time_start=time.time()
-    while True:
-        volt.append(adc()/256*3.3)
-    
-    
+    metka=0
+
+    while metka==0:
+
+        if waitForOpen():
+
+            metka=1
+
+
+                          #Если дверь открыта измерения и программа начинают работу
+    time_start = time.time()                #Записываем время старта
+
+    while time_len < 10:                    #Проверяем время выполнения программы
+
+        volt.append(adc())      #смотри код с АЦП
+        time_len = time.time() - time_start #Вычисляем время длительности программы
+
+    print("ВАШИ ВЫЧИСЛЕНИЯ ЗАКОНЧИЛИСЬ. ИДЕТ ОБРАБОТКА. ПОЖАЛУЙСТА ПОДОЖДИТЕ ...") #отправляет нас в except
+
+
 finally:
-    time_len=time.time()-time_start
-
-    with open('wave-data-120mm-kalibr.txt', 'w') as file:
-        file.write(str(time_len) +'\n')
-        for i in volt:
-            file.write(str(i) +'\n')
-
-    
-    time_step=[i*time_len/len(volt) for i in range(len(volt))]
-    pyplot.plot(time_step, volt)
-    pyplot.show()
-    gpio.output(dac, 0)
-    gpio.cleanup() 
+    with open('Волна.txt', 'w') as file:    #Создаем файл на запись
+        for i in volt:                      #
+            file.write(str(i) +'\n')        #записываем значения напряжения в файл
+        GPIO.cleanup()                          #отчищаем малинку
